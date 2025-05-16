@@ -10,8 +10,10 @@ import re
 import subprocess
 from dataclasses import dataclass, fields
 from enum import Enum, IntEnum, StrEnum
+from io import BytesIO
 from pathlib import Path
-from typing import List, Optional, Set, Dict, Any
+from typing import List, Optional, Set, Dict, Union, Any
+
 
 # Get tesseract executable from environment
 TESSERACT_PATH = os.environ.get("TESSERACT_PATH") or "tesseract"
@@ -26,6 +28,8 @@ else:
 
 def run_tesseract(
     arguments: List[str],
+    *,
+    stdin: Optional[BytesIO] = None,
     env: Optional[dict] = None,
     cwd: Optional[Path] = None,
 ) -> str:
@@ -50,7 +54,12 @@ def run_tesseract(
         shell=True,
         startupinfo=STARTUPINFO,
     )
-    stdout, stderr = process.communicate()
+    input_value = None
+    if stdin:
+        input_value = stdin.getvalue()
+
+    stdout, stderr = process.communicate(input=input_value)
+
     if process.returncode == 0:
         return stdout.decode("utf-8")
     return stderr.decode("utf-8")
@@ -198,16 +207,25 @@ class OCROptions:
 
 
 def get_text(
-    image_path: Path,
+    image: Union[Path, BytesIO],
     options: Optional[OCROptions] = None,
     env: Optional[Dict[str, Any]] = None,
     cwd: Optional[Path] = None,
 ) -> str:
     """get text from image"""
 
-    arguments = [str(image_path), "-"]
+    inputbase = "stdin"
+    outputbase = "stdout"
+    if isinstance(image, (Path, str)):
+        inputbase = str(image)
+
+    arguments = [inputbase, outputbase]
+
     if options:
         arguments.extend(options.get_arguments())
+
+    if isinstance(image, BytesIO):
+        return run_tesseract(arguments, stdin=image)
 
     return run_tesseract(arguments)
 
@@ -219,19 +237,29 @@ def _box_to_dict(line: str) -> Dict[str, str]:
 
 
 def get_textbox(
-    image_path: Path,
+    image: Union[Path, str],
     options: Optional[OCROptions] = None,
     env: Optional[Dict[str, Any]] = None,
     cwd: Optional[Path] = None,
 ) -> List[Dict[str, str]]:
 
-    arguments = [str(image_path), "-"]
+    inputbase = "stdin"
+    outputbase = "stdout"
+    if isinstance(image, (Path, str)):
+        inputbase = str(image)
+
+    arguments = [inputbase, outputbase]
+
     if options:
         arguments.extend(options.get_arguments())
 
     arguments.append("makebox")
 
-    tesseract_result = run_tesseract(arguments)
+    if isinstance(image, BytesIO):
+        tesseract_result = run_tesseract(arguments, stdin=image)
+    else:
+        tesseract_result = run_tesseract(arguments)
+
     lines = tesseract_result.splitlines()
     return [_box_to_dict(l) for l in lines[1:]]
 
@@ -256,18 +284,28 @@ def _tsv_to_dict(line: str) -> Dict[str, str]:
 
 
 def get_textdata(
-    image_path: Path,
+    image: Union[Path, BytesIO],
     options: Optional[OCROptions] = None,
     env: Optional[Dict[str, Any]] = None,
     cwd: Optional[Path] = None,
 ) -> List[Dict[str, str]]:
 
-    arguments = [str(image_path), "-"]
+    inputbase = "stdin"
+    outputbase = "stdout"
+    if isinstance(image, (Path, str)):
+        inputbase = str(image)
+
+    arguments = [inputbase, outputbase]
+
     if options:
         arguments.extend(options.get_arguments())
 
     arguments.append("tsv")
 
-    tesseract_result = run_tesseract(arguments)
+    if isinstance(image, BytesIO):
+        tesseract_result = run_tesseract(arguments, stdin=image)
+    else:
+        tesseract_result = run_tesseract(arguments)
+
     lines = tesseract_result.splitlines()
     return [_tsv_to_dict(l) for l in lines[1:]]
