@@ -77,9 +77,6 @@ def get_version() -> str:
     return match.group(1)
 
 
-TESSERACT_VERSION = get_version()
-
-
 def get_installed_languages() -> Set[str]:
     """get installed language(s) for OCR"""
 
@@ -88,8 +85,6 @@ def get_installed_languages() -> Set[str]:
     lines = tesseract_result.splitlines()
     return set(lines[1:])
 
-
-TESSERACT_INSTALLED_LANGUAGES = get_installed_languages()
 
 OCRLanguage = str
 """Language used for OCR"""
