@@ -12,7 +12,7 @@ from dataclasses import dataclass, fields
 from enum import Enum, IntEnum, StrEnum
 from io import BytesIO
 from pathlib import Path
-from typing import List, Optional, Set, Dict, Union, Any
+from typing import List, Optional, Dict, Union, Any
 
 
 # Get tesseract executable from environment
@@ -33,16 +33,22 @@ def run_tesseract(
     env: Optional[dict] = None,
     cwd: Optional[Path] = None,
 ) -> str:
-    """run tesseract"""
+    """run tesseract
 
-    # Tesseract cli:
-    #
-    #   tesseract --help | --help-extra | --version
-    #   tesseract --list-langs
-    #   tesseract INPUT OUTPUT [OPTIONS...] [CONFIGFILE...]
-    #
-    # To use stdin, pass `-` as input and use stdout, pass `-` as output.
-    #
+    Tesseract arguments:
+
+      <TESSERACT> --help | --help-extra | --version
+      <TESSERACT> --list-langs
+      <TESSERACT> INPUT OUTPUT [OPTIONS...] [CONFIGFILE...]
+
+    To work with standard IO:
+      * INPUT = "stdin"
+      * OUTPUT = "stdout"
+    The `stdin` argument is BytesIO contain compressed image data(PNG, JPG, TIFF, etc).
+
+    See https://github.com/tesseract-ocr/tesseract/blob/main/doc/tesseract.1.asc
+    for more information.
+    """
     command = [TESSERACT_PATH] + arguments
     process = subprocess.Popen(
         command,
@@ -77,13 +83,13 @@ def get_version() -> str:
     return match.group(1)
 
 
-def get_installed_languages() -> Set[str]:
+def get_installed_languages() -> List[str]:
     """get installed language(s) for OCR"""
 
     arguments = ["--list-langs"]
     tesseract_result = run_tesseract(arguments)
     lines = tesseract_result.splitlines()
-    return set(lines[1:])
+    return list(lines[1:])
 
 
 OCRLanguage = str
@@ -149,8 +155,8 @@ class OCREngineMode(IntEnum):
 
 
 @dataclass
-class OCROptions:
-    """OCR Options"""
+class TesseractOptions:
+    """Tesseract Options"""
 
     tessdata_path: Optional[Path] = None
     """Location of tessdata path"""
@@ -202,8 +208,8 @@ class OCROptions:
 
 
 def get_text(
-    image: Union[Path, BytesIO],
-    options: Optional[OCROptions] = None,
+    image: Union[Path, str, BytesIO],
+    options: Optional[TesseractOptions] = None,
     env: Optional[Dict[str, Any]] = None,
     cwd: Optional[Path] = None,
 ) -> str:
@@ -232,8 +238,8 @@ def _box_to_dict(line: str) -> Dict[str, str]:
 
 
 def get_textbox(
-    image: Union[Path, str],
-    options: Optional[OCROptions] = None,
+    image: Union[Path, str, BytesIO],
+    options: Optional[TesseractOptions] = None,
     env: Optional[Dict[str, Any]] = None,
     cwd: Optional[Path] = None,
 ) -> List[Dict[str, str]]:
@@ -279,8 +285,8 @@ def _tsv_to_dict(line: str) -> Dict[str, str]:
 
 
 def get_textdata(
-    image: Union[Path, BytesIO],
-    options: Optional[OCROptions] = None,
+    image: Union[Path, str, BytesIO],
+    options: Optional[TesseractOptions] = None,
     env: Optional[Dict[str, Any]] = None,
     cwd: Optional[Path] = None,
 ) -> List[Dict[str, str]]:

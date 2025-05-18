@@ -7,7 +7,7 @@ from typing import Optional
 
 from PIL.Image import Image
 
-from .api import get_text, OCROptions
+from .api import get_text, TesseractOptions
 
 
 Rect = namedtuple("Rect", ["left", "upper", "right", "lower"])
@@ -40,7 +40,7 @@ DefaultPILOptions = PILOptions()
 def get_text_from_image(
     image: Image,
     *,
-    ocr_options: Optional[OCROptions] = None,
+    ocr_options: Optional[TesseractOptions] = None,
     pil_options: Optional[PILOptions] = DefaultPILOptions,
     **kwargs,
 ) -> str:
