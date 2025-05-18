@@ -60,11 +60,13 @@ def run_tesseract(
         shell=True,
         startupinfo=STARTUPINFO,
     )
-    input_value = None
+    image_data = None
     if stdin:
-        input_value = stdin.getvalue()
+        # read from beginning
+        stdin.seek(0)
+        image_data = stdin.read()
 
-    stdout, stderr = process.communicate(input=input_value)
+    stdout, stderr = process.communicate(input=image_data)
 
     if process.returncode == 0:
         return stdout.decode("utf-8")
