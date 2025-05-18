@@ -210,7 +210,7 @@ class TesseractOptions:
 
 
 def get_text(
-    image: Union[Path, str, BytesIO],
+    image: Union[Path, BytesIO],
     options: Optional[TesseractOptions] = None,
     env: Optional[Dict[str, Any]] = None,
     cwd: Optional[Path] = None,
@@ -219,15 +219,21 @@ def get_text(
 
     inputbase = "stdin"
     outputbase = "stdout"
-    if isinstance(image, (Path, str)):
+
+    use_stdin = False
+    if isinstance(image, Path):
         inputbase = str(image)
+    elif isinstance(image, BytesIO):
+        use_stdin = True
+    else:
+        raise TypeError("image type must Path or BytesIO")
 
     arguments = [inputbase, outputbase]
 
     if options:
         arguments.extend(options.get_arguments())
 
-    if isinstance(image, BytesIO):
+    if use_stdin:
         return run_tesseract(arguments, stdin=image)
 
     return run_tesseract(arguments)
@@ -240,7 +246,7 @@ def _box_to_dict(line: str) -> Dict[str, str]:
 
 
 def get_textbox(
-    image: Union[Path, str, BytesIO],
+    image: Union[Path, BytesIO],
     options: Optional[TesseractOptions] = None,
     env: Optional[Dict[str, Any]] = None,
     cwd: Optional[Path] = None,
@@ -248,8 +254,14 @@ def get_textbox(
 
     inputbase = "stdin"
     outputbase = "stdout"
-    if isinstance(image, (Path, str)):
+
+    use_stdin = False
+    if isinstance(image, Path):
         inputbase = str(image)
+    elif isinstance(image, BytesIO):
+        use_stdin = True
+    else:
+        raise TypeError("image type must Path or BytesIO")
 
     arguments = [inputbase, outputbase]
 
@@ -258,7 +270,7 @@ def get_textbox(
 
     arguments.append("makebox")
 
-    if isinstance(image, BytesIO):
+    if use_stdin:
         tesseract_result = run_tesseract(arguments, stdin=image)
     else:
         tesseract_result = run_tesseract(arguments)
@@ -287,7 +299,7 @@ def _tsv_to_dict(line: str) -> Dict[str, str]:
 
 
 def get_textdata(
-    image: Union[Path, str, BytesIO],
+    image: Union[Path, BytesIO],
     options: Optional[TesseractOptions] = None,
     env: Optional[Dict[str, Any]] = None,
     cwd: Optional[Path] = None,
@@ -295,8 +307,14 @@ def get_textdata(
 
     inputbase = "stdin"
     outputbase = "stdout"
-    if isinstance(image, (Path, str)):
+
+    use_stdin = False
+    if isinstance(image, Path):
         inputbase = str(image)
+    elif isinstance(image, BytesIO):
+        use_stdin = True
+    else:
+        raise TypeError("image type must Path or BytesIO")
 
     arguments = [inputbase, outputbase]
 
@@ -305,7 +323,7 @@ def get_textdata(
 
     arguments.append("tsv")
 
-    if isinstance(image, BytesIO):
+    if use_stdin:
         tesseract_result = run_tesseract(arguments, stdin=image)
     else:
         tesseract_result = run_tesseract(arguments)
