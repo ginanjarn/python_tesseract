@@ -110,33 +110,33 @@ class LogLevel(StrEnum):
 class PageSegmentationMode(IntEnum):
     """Page segmentation modes (PSM)"""
 
-    osd_only = 0
+    OSD_ONLY = 0
     """Orientation and script detection (OSD) only."""
-    auto_osd = 1
+    AUTO_OSD = 1
     """Automatic page segmentation with OSD."""
-    auto_only = 2
+    AUTO_ONLY = 2
     """Automatic page segmentation, but no OSD, or OCR. (not implemented)"""
-    auto = 3
+    AUTO = 3
     """Fully automatic page segmentation, but no OSD. (Default)"""
-    single_column = 4
+    SINGLE_COLUMN = 4
     """Assume a single column of text of variable sizes."""
-    single_block_vert_text = 5
+    SINGLE_BLOCK_VERT_TEXT = 5
     """Assume a single uniform block of vertically aligned text."""
-    single_block = 6
+    SINGLE_BLOCK = 6
     """Assume a single uniform block of text."""
-    single_line = 7
+    SINGLE_LINE = 7
     """Treat the image as a single text line."""
-    single_word = 8
+    SINGLE_WORD = 8
     """Treat the image as a single word."""
-    circle_word = 9
+    CIRCLE_WORD = 9
     """Treat the image as a single word in a circle."""
-    single_char = 10
+    SINGLE_CHAR = 10
     """Treat the image as a single character."""
-    sparse_text = 11
+    SPARSE_TEXT = 11
     """Sparse text. Find as much text as possible in no particular order."""
-    sparse_text_osd = 12
+    SPARSE_TEXT_OSD = 12
     """Sparse text with OSD."""
-    raw_line = 13
+    RAW_LINE = 13
     """Raw line. Treat the image as a single text line,
     bypassing hacks that are Tesseract-specific."""
 
@@ -144,13 +144,13 @@ class PageSegmentationMode(IntEnum):
 class OCREngineMode(IntEnum):
     """OCR Engine modes (OEM)"""
 
-    tesseract_only = 0
+    TESSERACT_ONLY = 0
     """Legacy engine only."""
-    lstm_only = 1
+    LSTM_ONLY = 1
     """Neural nets LSTM engine only."""
-    tesseract_lstm_combined = 2
+    TESSERACT_LSTM_COMBINED = 2
     """Legacy + LSTM engines."""
-    default = 3
+    DEFAULT = 3
     """Default, based on what is available."""
 
 
