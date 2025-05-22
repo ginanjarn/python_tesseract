@@ -110,37 +110,73 @@ class LogLevel(StrEnum):
 
 
 class PageSegmentationMode(IntEnum):
-    """Page segmentation modes (PSM)"""
+    """Page segmentation modes (PSM)
+
+    Use case for PSM:
+
+    OSD_ONLY
+        Orientation and script detection (OSD) only.
+        No OCR returned.
+
+    AUTO_OSD
+        Automatic page segmentation with OSD.
+
+    AUTO_ONLY
+        Automatic page segmentation, but no OSD, or OCR. (not implemented)
+
+    AUTO
+        Fully automatic page segmentation, but no OSD. (Default)
+
+    SINGLE_COLUMN
+        Assume a single column of text of variable sizes.
+
+    SINGLE_BLOCK_VERTICAL_TEXT
+        Assume a single uniform block of vertically aligned text.
+
+    SINGLE_BLOCK
+        Assume a single uniform block of text.
+        Example book page.
+
+    SINGLE_LINE
+        Treat the image as a single text line.
+        Example licence plate.
+
+    SINGLE_WORD
+        Treat the image as a single word.
+
+    CIRCLE_WORD
+        Treat the image as a single word in a circle.
+
+    SINGLE_CHAR
+        Treat the image as a single character.
+
+    SPARSE_TEXT
+        Sparse text. Find as much text as possible in no particular order.
+        Text may be unordered.
+
+    SPARSE_TEXT_OSD
+        Sparse text with OSD.
+
+    RAW_LINE
+        Raw line. Treat the image as a single text line,
+        bypassing hacks that are Tesseract-specific.
+
+    """
 
     OSD_ONLY = 0
-    """Orientation and script detection (OSD) only."""
     AUTO_OSD = 1
-    """Automatic page segmentation with OSD."""
-    AUTO_ONLY = 2
-    """Automatic page segmentation, but no OSD, or OCR. (not implemented)"""
+    # AUTO_ONLY = 2  # not implemented
     AUTO = 3
-    """Fully automatic page segmentation, but no OSD. (Default)"""
     SINGLE_COLUMN = 4
-    """Assume a single column of text of variable sizes."""
-    SINGLE_BLOCK_VERT_TEXT = 5
-    """Assume a single uniform block of vertically aligned text."""
+    SINGLE_BLOCK_VERTICAL_TEXT = 5
     SINGLE_BLOCK = 6
-    """Assume a single uniform block of text."""
     SINGLE_LINE = 7
-    """Treat the image as a single text line."""
     SINGLE_WORD = 8
-    """Treat the image as a single word."""
     CIRCLE_WORD = 9
-    """Treat the image as a single word in a circle."""
     SINGLE_CHAR = 10
-    """Treat the image as a single character."""
     SPARSE_TEXT = 11
-    """Sparse text. Find as much text as possible in no particular order."""
     SPARSE_TEXT_OSD = 12
-    """Sparse text with OSD."""
     RAW_LINE = 13
-    """Raw line. Treat the image as a single text line,
-    bypassing hacks that are Tesseract-specific."""
 
 
 class OCREngineMode(IntEnum):
