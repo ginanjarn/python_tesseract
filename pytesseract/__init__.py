@@ -1,4 +1,4 @@
-from .api import (
+from .tesseract import (
     get_text,
     get_textbox,
     get_textdata,
