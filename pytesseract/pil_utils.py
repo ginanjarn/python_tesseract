@@ -16,18 +16,33 @@ Rect = namedtuple("Rect", ["left", "upper", "right", "lower"])
 
 @dataclass
 class PILOptions:
-    black_threshold: int = 128
+    grayscale: bool = False
+    """convert image to grayscale"""
+
+    binarize: bool = False
+    """binarize image to 0 (black) or 255 (white) based on white_threshold"""
+    white_threshold: int = 128
+    """"""
+
     rotate_angle: Optional[float] = 0
+    """rotate image"""
+
     crop_rect: Optional[Rect] = None
+    """crop image with defined rectangle"""
 
     def apply(self, image: Image) -> Image:
-        """apply to image"""
+        """apply options to image"""
 
-        image = image.convert("L")
-        image = image.point(lambda x: 0 if x < self.black_threshold else 255)
+        if self.binarize:
+            image = image.point(lambda x: 0 if x < self.white_threshold else 255)
+
+        # ignore grayscale if image has been binarized
+        if self.grayscale and (not self.binarize):
+            image = image.convert("L")
 
         if angle := self.rotate_angle:
             image = image.rotate(angle)
+
         if rect := self.crop_rect:
             image = image.crop(*rect)
 
@@ -40,7 +55,7 @@ DefaultPILOptions = PILOptions()
 def get_text_from_image(
     image: Image,
     *,
-    ocr_options: Optional[TesseractOptions] = None,
+    tesseract_options: Optional[TesseractOptions] = None,
     pil_options: Optional[PILOptions] = DefaultPILOptions,
     **kwargs,
 ) -> str:
@@ -50,4 +65,4 @@ def get_text_from_image(
 
     buffer = BytesIO()
     image.save(buffer, format="PNG")
-    return get_text(buffer, options=ocr_options, **kwargs)
+    return get_text(buffer, options=tesseract_options, **kwargs)
